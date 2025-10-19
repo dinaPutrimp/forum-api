@@ -18,8 +18,11 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
+          export PATH=$PATH:/usr/local/bin
           cd ~/forum-api
           git pull origin master
+          node -v
+          npm -v
           npm install
           npm run migrate up
           pm2 restart forum-api
