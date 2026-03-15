@@ -2,6 +2,7 @@ const AddedReplyToComment = require("../../../Domains/replies/entities/AddedRepl
 const AddReplyToComment = require("../../../Domains/replies/entities/AddReplyToComment");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
+const NotificationRepository = require("../../../Domains/notifications/NotificationRepository");
 const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
 const AddReplyToCommentUseCase = require("../AddReplyToCommentUseCase");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
@@ -16,6 +17,7 @@ describe("AddReplyToCommentUseCase", () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockNotificationRepository = new NotificationRepository();
 
     mockThreadRepository.verifyAvailableThread = jest
       .fn()
@@ -28,6 +30,7 @@ describe("AddReplyToCommentUseCase", () => {
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      notificationRepository: mockNotificationRepository,
     });
 
     // Action
@@ -47,6 +50,7 @@ describe("AddReplyToCommentUseCase", () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockNotificationRepository = new NotificationRepository();
 
     mockThreadRepository.verifyAvailableThread = jest.fn().mockResolvedValue();
     mockCommentRepository.verifyAvailableComment = jest
@@ -60,6 +64,7 @@ describe("AddReplyToCommentUseCase", () => {
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      notificationRepository: mockNotificationRepository,
     });
 
     // Action
@@ -89,6 +94,7 @@ describe("AddReplyToCommentUseCase", () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockNotificationRepository = new NotificationRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyAvailableThread = jest.fn().mockResolvedValue();
@@ -98,12 +104,19 @@ describe("AddReplyToCommentUseCase", () => {
     mockReplyRepository.addReplyToComment = jest
       .fn()
       .mockImplementation(() => Promise.resolve(mockAddedReplyToComment));
+    mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+      id: "comment-123",
+      content: "wkwkw",
+      owner: "user-456",
+    });
+    mockNotificationRepository.addNotification = jest.fn().mockResolvedValue();
 
     /** creating use case instance */
     const addReplyUseCase = new AddReplyToCommentUseCase({
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      notificationRepository: mockNotificationRepository,
     });
 
     // Action
@@ -123,6 +136,12 @@ describe("AddReplyToCommentUseCase", () => {
       })
     );
 
+    expect(mockThreadRepository.verifyAvailableThread).toBeCalledWith(
+      "thread-123"
+    );
+    expect(mockCommentRepository.verifyAvailableComment).toBeCalledWith(
+      "comment-123"
+    );
     expect(mockReplyRepository.addReplyToComment).toBeCalledWith(
       new AddReplyToComment({
         content: useCasePayload.content,
@@ -130,5 +149,14 @@ describe("AddReplyToCommentUseCase", () => {
       "comment-123",
       "user-123"
     );
+    expect(mockCommentRepository.getCommentById).toBeCalledWith("comment-123");
+    expect(mockNotificationRepository.addNotification).toBeCalledWith({
+      recipientId: "user-456",
+      actorId: "user-123",
+      type: "reply",
+      entityType: "reply",
+      entityId: "reply-123",
+      payload: { commentId: "comment-123" },
+    });
   });
 });

@@ -5,6 +5,7 @@ const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelp
 const CommentLikesTableTestHelper = require("../../../../tests/CommentLikesTableTestHelper");
 const container = require("../../container");
 const createServer = require("../createServer");
+const NotificationTableTestHelper = require("../../../../tests/NotificationTableTestHelper");
 
 describe("/likes endpoint", () => {
   afterAll(async () => {
@@ -12,6 +13,7 @@ describe("/likes endpoint", () => {
   });
 
   afterEach(async () => {
+    await NotificationTableTestHelper.cleanTable();
     await CommentLikesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
@@ -63,7 +65,9 @@ describe("/likes endpoint", () => {
       });
 
       const { accessToken } = JSON.parse(loginResponse.payload).data;
-      const { accessToken: demoAccessToken } = JSON.parse(demoResponse.payload).data;
+      const { accessToken: demoAccessToken } = JSON.parse(
+        demoResponse.payload
+      ).data;
 
       const thread = await server.inject({
         method: "POST",

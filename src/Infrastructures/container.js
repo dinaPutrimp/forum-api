@@ -21,6 +21,8 @@ const ReplyRepository = require("../Domains/replies/ReplyRepository");
 const ReplyRepositoryPostgres = require("./repository/ReplyRepositoryPostgres");
 const CommentLikeRepository = require("../Domains/comment-likes/CommentLikeRepository");
 const CommentLikeRepositoryPostgres = require("./repository/CommentLikeRepositoryPostgres");
+const NotificationRepository = require("../Domains/notifications/NotificationRepository");
+const NotificationRepositoryPostgres = require("./repository/NotificationRepositoryPostgres");
 
 // use case
 const AddUserUseCase = require("../Applications/use_case/AddUserUseCase");
@@ -38,6 +40,9 @@ const DetailThreadUseCase = require("../Applications/use_case/DetailThreadUseCas
 const AddReplyToCommentUseCase = require("../Applications/use_case/AddReplyToCommentUseCase");
 const DeleteReplyUseCase = require("../Applications/use_case/DeleteReplyUseCase");
 const ToggleCommentLikeUseCase = require("../Applications/use_case/ToggleCommentLikeUseCase");
+const GetNotificationUseCase = require("../Applications/use_case/GetNotificationUseCase");
+const MarkNotificationAsReadUseCase = require("../Applications/use_case/MarkNotificationAsReadUseCase");
+const MarkAllNotificationsAsReadUseCase = require("../Applications/use_case/MarkAllNotificationsAsReadUseCase");
 
 // creating container
 const container = createContainer();
@@ -122,6 +127,13 @@ container.register([
   {
     key: CommentLikeRepository.name,
     Class: CommentLikeRepositoryPostgres,
+    parameter: {
+      dependencies: [{ concrete: pool }, { concrete: nanoid }],
+    },
+  },
+  {
+    key: NotificationRepository.name,
+    Class: NotificationRepositoryPostgres,
     parameter: {
       dependencies: [{ concrete: pool }, { concrete: nanoid }],
     },
@@ -229,6 +241,10 @@ container.register([
           name: "threadRepository",
           internal: ThreadRepository.name,
         },
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
+        },
       ],
     },
   },
@@ -288,6 +304,10 @@ container.register([
           name: "threadRepository",
           internal: ThreadRepository.name,
         },
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
+        },
       ],
     },
   },
@@ -321,6 +341,49 @@ container.register([
         {
           name: "threadRepository",
           internal: ThreadRepository.name,
+        },
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetNotificationUseCase.name,
+    Class: GetNotificationUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: MarkNotificationAsReadUseCase.name,
+    Class: MarkNotificationAsReadUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: MarkAllNotificationsAsReadUseCase.name,
+    Class: MarkAllNotificationsAsReadUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "notificationRepository",
+          internal: NotificationRepository.name,
         },
       ],
     },

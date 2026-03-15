@@ -2,6 +2,7 @@ const pool = require("../../database/postgres/pool");
 const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
 const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
+const NotificationTableTestHelper = require("../../../../tests/NotificationTableTestHelper");
 const container = require("../../container");
 const createServer = require("../createServer");
 
@@ -11,9 +12,10 @@ describe("/comments endpoint", () => {
   });
 
   afterEach(async () => {
-    await UsersTableTestHelper.cleanTable();
-    await ThreadsTableTestHelper.cleanTable();
+    await NotificationTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
   });
 
   describe("when POST /threads/{threadId}/comments", () => {
@@ -1110,7 +1112,7 @@ describe("/comments endpoint", () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-  
+
       const response = await server.inject({
         method: "DELETE",
         url: `/threads/${threadId}/comments/${commentId}/replies/reply-124`,

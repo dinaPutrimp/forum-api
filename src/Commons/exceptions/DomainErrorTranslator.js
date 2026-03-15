@@ -132,6 +132,9 @@ DomainErrorTranslator._directories = {
     new InvariantError(
       "tidak dapat menyukai/membatalkan karena properti yang dibutuhkan tidak sesuai"
     ),
+  "NOTIFICATION_REPOSITORY.METHOD_NOT_IMPLEMENTED": new InvariantError(
+    "tidak ada method addNotification"
+  ),
 };
 
 module.exports = DomainErrorTranslator;

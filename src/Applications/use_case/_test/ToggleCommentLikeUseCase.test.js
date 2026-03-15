@@ -2,6 +2,7 @@ const CommentLikeRepository = require("../../../Domains/comment-likes/CommentLik
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const ToggleCommentLikeUseCase = require("../ToggleCommentLikeUseCase");
+const NotificationRepository = require("../../../Domains/notifications/NotificationRepository");
 
 describe("ToggleCommentLikeUseCase", () => {
   /**
@@ -25,6 +26,7 @@ describe("ToggleCommentLikeUseCase", () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockCommentLikeRepository = new CommentLikeRepository();
+    const mockNotificationRepository = new NotificationRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyAvailableThread = jest.fn().mockResolvedValue();
@@ -36,12 +38,19 @@ describe("ToggleCommentLikeUseCase", () => {
       .mockResolvedValue(true);
     mockCommentLikeRepository.deleteCommentLike = jest.fn().mockResolvedValue();
     mockCommentLikeRepository.addCommentLike = jest.fn();
+    mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+      id: "comment-123",
+      content: "wkwkw",
+      owner: "user-456",
+    });
+    mockNotificationRepository.addNotification = jest.fn().mockResolvedValue();
 
     /** creating use case instance */
     const toggleLikeUseCase = new ToggleCommentLikeUseCase({
       commentLikeRepository: mockCommentLikeRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      notificationRepository: mockNotificationRepository,
     });
 
     // Action
@@ -70,6 +79,7 @@ describe("ToggleCommentLikeUseCase", () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockCommentLikeRepository = new CommentLikeRepository();
+    const mockNotificationRepository = new NotificationRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyAvailableThread = jest.fn().mockResolvedValue();
@@ -81,11 +91,18 @@ describe("ToggleCommentLikeUseCase", () => {
       .mockResolvedValue(false);
     mockCommentLikeRepository.addCommentLike = jest.fn().mockResolvedValue();
     mockCommentLikeRepository.deleteCommentLike = jest.fn();
+    mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+      id: "comment-123",
+      content: "wkwkw",
+      owner: "user-456",
+    });
+    mockNotificationRepository.addNotification = jest.fn().mockResolvedValue();
 
     const toggleLikeUseCase = new ToggleCommentLikeUseCase({
       commentRepository: mockCommentRepository,
       commentLikeRepository: mockCommentLikeRepository,
       threadRepository: mockThreadRepository,
+      notificationRepository: mockNotificationRepository,
     });
 
     // Action
@@ -107,5 +124,14 @@ describe("ToggleCommentLikeUseCase", () => {
       "user-123"
     );
     expect(mockCommentLikeRepository.deleteCommentLike).not.toHaveBeenCalled();
+    expect(mockCommentRepository.getCommentById).toBeCalledWith("comment-123");
+    expect(mockNotificationRepository.addNotification).toBeCalledWith({
+      recipientId: "user-456",
+      actorId: "user-123",
+      type: "like",
+      entityType: "comment",
+      entityId: "comment-123",
+      payload: { threadId: "thread-123" },
+    });
   });
 });

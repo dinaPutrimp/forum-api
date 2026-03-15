@@ -2,10 +2,16 @@ const AddReplyToComment = require("../../Domains/replies/entities/AddReplyToComm
 const AddedReplyToComment = require("../../Domains/replies/entities/AddedReplyToComment");
 
 class AddReplyToCommentUseCase {
-  constructor({ replyRepository, commentRepository, threadRepository }) {
+  constructor({
+    replyRepository,
+    commentRepository,
+    threadRepository,
+    notificationRepository,
+  }) {
     this._replyRepository = replyRepository;
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
+    this._notificationRepository = notificationRepository;
   }
 
   async execute(useCasePayload, threadId, commentId, owner) {
@@ -19,6 +25,18 @@ class AddReplyToCommentUseCase {
       commentId,
       owner
     );
+    const comment = await this._commentRepository.getCommentById(commentId);
+
+    if (comment.owner !== owner) {
+      await this._notificationRepository.addNotification({
+        recipientId: comment.owner,
+        actorId: owner,
+        type: "reply",
+        entityType: "reply",
+        entityId: addedReply.id,
+        payload: { commentId },
+      });
+    }
 
     return new AddedReplyToComment(addedReply);
   }
