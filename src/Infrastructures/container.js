@@ -43,6 +43,7 @@ const ToggleCommentLikeUseCase = require("../Applications/use_case/ToggleComment
 const GetNotificationUseCase = require("../Applications/use_case/GetNotificationUseCase");
 const MarkNotificationAsReadUseCase = require("../Applications/use_case/MarkNotificationAsReadUseCase");
 const MarkAllNotificationsAsReadUseCase = require("../Applications/use_case/MarkAllNotificationsAsReadUseCase");
+const GetAllThreadsUseCase = require("../Applications/use_case/GetAllThreadsUseCase");
 
 // creating container
 const container = createContainer();
@@ -384,6 +385,19 @@ container.register([
         {
           name: "notificationRepository",
           internal: NotificationRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetAllThreadsUseCase.name,
+    Class: GetAllThreadsUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "threadRepository",
+          internal: ThreadRepository.name,
         },
       ],
     },

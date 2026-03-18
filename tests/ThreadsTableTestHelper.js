@@ -40,6 +40,18 @@ const ThreadsTableTestHelper = {
     return result.rows[0].owner;
   },
 
+  async getAllThreads() {
+    const query = {
+      text: `SELECT t.id, t.title, t.body, t.date, u.username 
+            FROM threads t 
+            JOIN users u ON u.id = t.owner
+            ORDER BY t.date DESC`,
+    };
+
+    const result = await pool.query(query);
+    return result.rows;
+  },
+
   async cleanTable() {
     await pool.query("DELETE FROM threads WHERE 1=1");
   },
