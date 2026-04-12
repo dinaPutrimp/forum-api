@@ -15,6 +15,12 @@ const createServer = async (container) => {
   const server = Hapi.server({
     host: process.env.HOST,
     port: process.env.PORT,
+    routes: {
+      cors: {
+        origin: [process.env.CORS_ORIGIN || "http://localhost:5173"],
+        credentials: true,
+      },
+    },
   });
 
   await server.register(Jwt);
