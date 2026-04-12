@@ -42,10 +42,24 @@ const ThreadsTableTestHelper = {
 
   async getAllThreads() {
     const query = {
-      text: `SELECT t.id, t.title, t.body, t.date, u.username 
+      text: `SELECT t.id, t.title, t.body, t.date, u.username,
+                    (SELECT COUNT(c.id)::int FROM comments c WHERE c.thread_id = t.id) AS comment_count
+             FROM threads t
+             JOIN users u ON u.id = t.owner
+             ORDER BY t.date DESC`,
+    };
+
+    const result = await pool.query(query);
+    return result.rows;
+  },
+
+  async getThreadsByUser(userId) {
+    const query = {
+      text: `SELECT t.id, t.title, t.body, t.date 
             FROM threads t 
-            JOIN users u ON u.id = t.owner
+            WHERE t.owner = $1
             ORDER BY t.date DESC`,
+      values: [userId],
     };
 
     const result = await pool.query(query);

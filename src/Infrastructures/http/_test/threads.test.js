@@ -269,4 +269,60 @@ describe("/threads endpoint", () => {
       expect(responseJson.data.threads).toBeDefined();
     });
   });
+
+  describe("when GET /threads/me", () => {
+    it("should response 200 and show threads", async () => {
+      // Arrange
+      const requestPayload = {
+        title: "a thread",
+        body: "pesut",
+      };
+      const server = await createServer(container);
+
+      // Action
+      await server.inject({
+        method: "POST",
+        url: "/users",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+          fullname: "Dicoding Indonesia",
+        },
+      });
+
+      const loginResponse = await server.inject({
+        method: "POST",
+        url: "/authentications",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+        },
+      });
+
+      const { accessToken } = JSON.parse(loginResponse.payload).data;
+
+      await server.inject({
+        method: "POST",
+        url: "/threads",
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const response = await server.inject({
+        method: "GET",
+        url: `/threads/me`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // ← tambah ini
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual("success");
+      expect(responseJson.data.threads).toBeDefined();
+    });
+  });
 });

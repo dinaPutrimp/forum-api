@@ -44,6 +44,8 @@ const GetNotificationUseCase = require("../Applications/use_case/GetNotification
 const MarkNotificationAsReadUseCase = require("../Applications/use_case/MarkNotificationAsReadUseCase");
 const MarkAllNotificationsAsReadUseCase = require("../Applications/use_case/MarkAllNotificationsAsReadUseCase");
 const GetAllThreadsUseCase = require("../Applications/use_case/GetAllThreadsUseCase");
+const GetUserUseCase = require("../Applications/use_case/GetUserUseCase");
+const GetThreadsByUserUseCase = require("../Applications/use_case/GetThreadsByUserUseCase");
 
 // creating container
 const container = createContainer();
@@ -392,6 +394,32 @@ container.register([
   {
     key: GetAllThreadsUseCase.name,
     Class: GetAllThreadsUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "threadRepository",
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetUserUseCase.name,
+    Class: GetUserUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "userRepository",
+          internal: UserRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetThreadsByUserUseCase.name,
+    Class: GetThreadsByUserUseCase,
     parameter: {
       injectType: "destructuring",
       dependencies: [

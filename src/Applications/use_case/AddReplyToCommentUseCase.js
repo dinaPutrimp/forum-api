@@ -34,7 +34,7 @@ class AddReplyToCommentUseCase {
         type: "reply",
         entityType: "reply",
         entityId: addedReply.id,
-        payload: { commentId },
+        payload: { commentId, threadId },
       });
     }
 

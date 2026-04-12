@@ -156,7 +156,7 @@ describe("AddReplyToCommentUseCase", () => {
       type: "reply",
       entityType: "reply",
       entityId: "reply-123",
-      payload: { commentId: "comment-123" },
+      payload: { commentId: "comment-123", threadId: "thread-123" },
     });
   });
 });

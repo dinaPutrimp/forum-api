@@ -14,6 +14,7 @@ describe("GetAllThreadsUseCase", () => {
         body: "pesut",
         date: "2025-10-12T00:00:00.000Z",
         username: "dicoding",
+        comment_count: 0,
       },
     ]);
 
@@ -34,6 +35,7 @@ describe("GetAllThreadsUseCase", () => {
         body: "pesut",
         date: "2025-10-12T00:00:00.000Z",
         username: "dicoding",
+        comment_count: 0,
       },
     ]);
   });

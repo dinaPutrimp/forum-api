@@ -20,6 +20,10 @@ class UserRepository {
       "USER_REPOSITORY.GET_ID_BY_USERNAME_METHOD_NOT_IMPLEMENTED"
     );
   }
+
+  async getUserById(_userId) {
+    throw new Error("USER_REPOSITORY.GET_USER_BY_ID_METHOD_NOT_IMPLEMENTED");
+  }
 }
 
 module.exports = UserRepository;
