@@ -87,12 +87,11 @@ const createServer = async (container) => {
   });
 
   server.ext("onPreAuth", async (request, h) => {
-    const { path } = request;
-    const isRateLimited = path.startsWith("/threads");
-
-    if (isRateLimited) {
+    if (request.path.startsWith("/threads")) {
       try {
-        await rateLimiter.consume(request.info.remoteAddress);
+        const ip =
+          request.headers["x-forwarded-for"] || request.info.remoteAddress;
+        await rateLimiter.consume(ip);
       } catch (e) {
         return h
           .response({ status: "fail", message: "Too many requests" })
