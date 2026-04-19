@@ -24,7 +24,8 @@
     "dotenv": "^10.0.0",
     "instances-container": "^2.0.3",
     "nanoid": "^3.1.23",
-    "pg": "^8.6.0"
+    "pg": "^8.6.0",
+    "rate-limiter-flexible": "^11.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",

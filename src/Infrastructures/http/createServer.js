@@ -1,5 +1,6 @@
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
+const { RateLimiterMemory } = require("rate-limiter-flexible");
 
 const ClientError = require("../../Commons/exceptions/ClientError");
 const DomainErrorTranslator = require("../../Commons/exceptions/DomainErrorTranslator");
@@ -21,6 +22,11 @@ const createServer = async (container) => {
         credentials: true,
       },
     },
+  });
+
+  const rateLimiter = new RateLimiterMemory({
+    points: 30,
+    duration: 60,
   });
 
   await server.register(Jwt);
@@ -78,6 +84,23 @@ const createServer = async (container) => {
     handler: () => ({
       value: "Hello world!",
     }),
+  });
+
+  server.ext("onPreAuth", async (request, h) => {
+    const { path } = request;
+    const isRateLimited = path.startsWith("/threads");
+
+    if (isRateLimited) {
+      try {
+        await rateLimiter.consume(request.info.remoteAddress);
+      } catch (e) {
+        return h
+          .response({ status: "fail", message: "Too many requests" })
+          .code(429)
+          .takeover();
+      }
+    }
+    return h.continue;
   });
 
   server.ext("onPreResponse", (request, h) => {
