@@ -181,18 +181,6 @@ curl -X POST https://your-app.railway.app/threads \
 
 ---
 
-## Deploy ke Railway
-
-1. Push repo ke GitHub
-2. Buat project baru di [Railway](https://railway.app)
-3. Connect repository GitHub
-4. Tambahkan semua environment variable di tab **Variables**
-5. Railway akan otomatis build & deploy
-
-> Pastikan `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, dan `PGPASSWORD` sudah diisi sesuai kredensial Supabase.
-
----
-
 ## Lisensi
 
 MIT
